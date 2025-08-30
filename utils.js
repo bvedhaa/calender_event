@@ -1,12 +1,13 @@
 const { DateTime } = require("luxon");
 
-/**
- * Check for conflicts
- */
+//  Check for conflicts
 function hasConflict(existingEvents, newEvent, bufferMinutes) {
+  
+  // Parse new event times
   const newStart = DateTime.fromISO(newEvent.startTime);
   const newEnd = DateTime.fromISO(newEvent.endTime);
 
+  // Check each existing event for conflicts
   return existingEvents.filter(event => {
     const eventStart = DateTime.fromISO(event.startTime);
     const eventEnd = DateTime.fromISO(event.endTime);
@@ -25,14 +26,15 @@ function hasConflict(existingEvents, newEvent, bufferMinutes) {
   });
 }
 
-/**
- * Suggest alternative times
- */
+// Suggest alternative times
 function suggestTimes(existingEvents, newEvent, bufferMinutes, workHours) {
   const suggestions = [];
+
+  // Start searching 15 min after the proposed event's end time
   let candidateStart = DateTime.fromISO(newEvent.endTime).plus({ minutes: bufferMinutes });
   const duration = DateTime.fromISO(newEvent.endTime).diff(DateTime.fromISO(newEvent.startTime), "minutes").minutes;
 
+  // Try to find 3 suggestions
   while (suggestions.length < 3) {
     const candidateEnd = candidateStart.plus({ minutes: duration });
 
